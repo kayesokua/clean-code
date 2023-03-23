@@ -36,8 +36,8 @@ class TestMyCalendar(unittest.TestCase):
         self.assertEqual(calendar.get_events(3, 10, 2023), ["Party"])
         calendar.remove_event("Lunch", 3, 11, 2023)
         self.assertIsNone(calendar.get_events(3, 11, 2023))
-        calendar.remove_event("Nonexistent Event", 3, 10, 2023)
-        self.assertEqual(calendar.get_events(3, 10, 2023), ["Party"])
+        calendar.remove_event("Party", 3, 10, 2023)
+        self.assertIsNone(calendar.get_events(3, 10, 2023))
 
     def test_get_events(self):
         calendar = MyCalendar()

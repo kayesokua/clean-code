@@ -1,59 +1,40 @@
+from collections import defaultdict
+
 class MyCalendar:
+    """
+    A calendar that can store events and return them based on the date.
+    """
+
     def __init__(self):
-        self.events = {}
+        self.events = defaultdict(list)
 
     def day_of_year(self, month, day_of_month, year):
-        if month == 1:
-            day_of_month += 0
-        elif month == 2:
-            day_of_month += 31
-        elif month == 3:
-            day_of_month += 59
-        elif month == 4:
-            day_of_month += 90
-        elif month == 5:
-            day_of_month += 31 + 28 + 31 + 30
-        elif month == 6:
-            day_of_month += 31 + 28 + 31 + 30 + 31
-        elif month == 7:
-            day_of_month += 31 + 28 + 31 + 30 + 31 + 30
-        elif month == 8:
-            day_of_month += 31 + 28 + 31 + 30 + 31 + 30 + 31
-        elif month == 9:
-            day_of_month += 31 + 28 + 31 + 30 + 31 + 30 + 31 + 31
-        elif month == 10:
-            day_of_month += 31 + 28 + 31 + 30 + 31 + 30 + 31 + 31 + 30
-        elif month == 11:
-            day_of_month += 31 + 28 + 31 + 30 + 31 + 30 + 31 + 31 + 30 + 31
-        elif month == 12:
-            day_of_month += 31 + 28 + 31 + 30 + 31 + 30 + 31 + 31 + 30 + 31 + 30
-        else:
+        days_per_month = [0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334]
+
+        # Check if the date is valid
+        if month < 1 or month > 12 or day_of_month < 1 or day_of_month > 31:
             return -1
 
-        if (year % 4 == 0 or (year % 100 == 0 and year % 400 == 0)) and month > 2:
-            day_of_month += 1
-        return day_of_month
+        # Check if the input year is a leap year and adjust day of year if necessary
+        if month > 2 and (year % 4 == 0 and year % 100 != 0 or year % 400 == 0):
+            day_of_year = days_per_month[month - 1] + day_of_month + 1
+        else:
+            day_of_year = days_per_month[month - 1] + day_of_month
+
+        return day_of_year
 
     def add_event(self, name, month, day_of_month, year):
         day_of_year = self.day_of_year(month, day_of_month, year)
         if name:
-            if day_of_year in self.events:
-                self.events[day_of_year].append(name)
-            else:
-                self.events[day_of_year] = [name]
+            self.events[day_of_year].append(name)
 
     def remove_event(self, name, month, day_of_month, year):
         day_of_year = self.day_of_year(month, day_of_month, year)
-        if name:
-            if day_of_year in self.events:
-                if name in self.events[day_of_year]:
-                    self.events[day_of_year].remove(name)
-                if len(self.events[day_of_year]) == 0:
-                    del self.events[day_of_year]
+        if day_of_year in self.events:
+            self.events[day_of_year].remove(name)
+            if not self.events[day_of_year]:
+                del self.events[day_of_year]
 
     def get_events(self, month, day_of_month, year):
         day_of_year = self.day_of_year(month, day_of_month, year)
-        if day_of_year in self.events:
-            return self.events[day_of_year]
-        else:
-            return None
+        return self.events.get(day_of_year)
